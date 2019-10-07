@@ -1,0 +1,34 @@
+require('../src/aws-matchers/'); // custom matcher for assertion
+import { initProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
+import { addAnalytics, removeAnalytics } from '../src/categories/analytics';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from '../src/utils';
+import * as fs from 'fs'
+import * as path from 'path';
+
+console.log(__dirname);
+
+describe('amplify add analytics', () => {
+    let projRoot: string;
+    beforeEach(() => {
+      projRoot = createNewProjectDir();
+      jest.setTimeout(1000 * 60 * 60); // 1 hour
+    });
+
+    afterEach(async () => {
+      await removeAnalytics(projRoot, {});
+      deleteProjectDir(projRoot);
+
+    });
+
+    it('add analytics', async () => {
+
+      await initProjectWithProfile(projRoot, {});
+      const rightName = 'my-app'
+      await addAnalytics(projRoot, { rightName, wrongName: 'my=app' });
+      expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true)
+
+    })
+
+   
+
+})
